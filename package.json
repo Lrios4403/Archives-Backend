@@ -1,6 +1,7 @@
 {
   "name": "archives-backend",
   "description": "WARC web-archive backend: a Bun HTTP API over a Postgres index, and the parser that fills it.",
+  "license": "WTFPL",
   "module": "webserver.ts",
   "type": "module",
   "private": true,

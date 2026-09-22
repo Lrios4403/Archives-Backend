@@ -172,5 +172,9 @@ On Linux with python3 available, the first two categories go away.
 
 ## License
 
-None yet. Without one, default copyright applies and nobody else has permission
-to use, copy or modify this.
+[WTFPL](https://www.wtfpl.net/) version 2. You just do what the fuck you want to.
+See [LICENSE](LICENSE).
+
+Note that this covers the code in this repository and nothing else. Archives are
+not distributed here, and whatever you capture with it carries whatever rights it
+carried before you captured it.
