@@ -1,0 +1,141 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# Bun bundler output at the repo root.
+#
+# webserver.ts carries a commented-out `Bun.build({ entrypoints: ['./webserver.ts'],
+# outdir: './' })`. While that block was live it wrote webserver.js next to its own
+# source, and the bundle inlined the database connection string — credentials and
+# all — because a bundler resolves defaults at build time. A stale copy of exactly
+# that sat in this folder for a year.
+#
+# Ignored by exact name rather than `*.js`, so legitimate JavaScript added later is
+# still tracked.
+/webserver.js
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+#
+# These two globs arrived from `bun init` with their asterisks replaced by
+# underscores — `_.log` and `report.[0-9]_.[0-9]_....json` — which match nothing at
+# all. The effect was invisible and not cheap: parse-errors.log grew to 357 KB of
+# real run output (archived page bodies, a session cookie, and the filename of every
+# WARC in the local corpus) while appearing to be covered by a rule.
+logs
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# WARC archives, and the runtime store they live in.
+#
+# warcs/ is where the parser reads from — webserver.ts, parse.ts, routes/status.tsx
+# and routes/progress.tsx all resolve "./warcs/" — so the DIRECTORY has to survive a
+# clone even though nothing inside it should ever be committed. Hence .gitkeep and
+# the negation below.
+#
+# The file rules are not belt-and-braces. Individual archives here run to multiple
+# gigabytes, and GitHub rejects any single file over 100 MB outright: one careless
+# `git add .` in a populated checkout fails the push rather than merely bloating it.
+#
+# The extension list is deliberately wider than what this parser reads today,
+# because the rule has to hold for whatever lands in the tree, not for what the
+# code supports. Every one of these was verified with `git check-ignore`:
+#
+#   .warc  .warc.gz  .warc.zst   the archives themselves, raw and compressed
+#   .wacz                        the packaged web-archive format
+#   .arc   .arc.gz                the pre-WARC format, still common in older holdings
+#   .cdx   .cdxj  .cdx.gz  .os.cdx
+#                                INDEX files. Easy to overlook because they are
+#                                small and look like text, but `wget --warc-cdx`
+#                                writes one next to every crawl, and it lists the
+#                                url, timestamp and byte offset of every record.
+warcs/*
+!warcs/.gitkeep
+*.warc
+*.warc.gz
+*.warc.zst
+*.wacz
+*.arc
+*.arc.gz
+*.cdx
+*.cdxj
+*.cdx.gz
+*.os.cdx
+
+# Zip archives.
+#
+# The download route's whole job is to bundle captures into a zip, so a stray one
+# in this tree is archive content by another name. No .zip is tracked today and
+# the tests write theirs to /tmp, so nothing legitimate is caught. If a zip ever
+# needs to be a fixture, add it explicitly with `git add -f`.
+*.zip
+
+# dotenv environment variable files
+#
+# .env is ignored because DATABASE_URL is a credential and the rest differ per host.
+# .env.example is re-included deliberately: db.ts now THROWS when DATABASE_URL is
+# unset, so a fresh clone that cannot see the variable list cannot start at all.
+.env
+.env.*
+!.env.example
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# Scratch files the benchmark writes INTO the tree.
+#
+# parser/storedzip.bench.ts calls Bun.write() on `parser/.bundle-probe-<label>.ts`
+# next to its own source rather than in a temp directory, so a killed run leaves
+# them behind.
+.bundle-probe-*.ts
+
+# Editor and OS droppings. Neither belongs to anyone but the machine that made it.
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# This project uses Bun. Another package manager's lockfile is not authoritative
+# here, and a second one is a trap rather than a redundancy: `bun install` and
+# `npm install` disagree about the tree, and whichever ran last silently wins. A
+# package-lock.json that used to sit beside bun.lock listed one of the three
+# declared dependencies and has been removed.
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ---------------------------------------------------------------------------
+# DELIBERATELY NOT IGNORED — each of these looks ignorable and is load-bearing.
+#
+#   bun.lock          The real lockfile. The Dockerfile copies it and runs
+#                     `bun install --frozen-lockfile`, so a missing or stale one
+#                     fails the image build rather than drifting quietly.
+#
+#   db/*.sql          Schema and migrations — including DEPLOYED.recovered.sql,
+#                     which was pulled out of a live database with
+#                     pg_get_functiondef and is the ONLY copy of
+#                     search_responses_broad() that exists anywhere. setup.sql has
+#                     drifted from production and does not define it.
+#
+#   db/postgresql.tuning.conf
+#                     Despite the extension, nothing loads this. It is the
+#                     measurement write-up behind the settings, kept because the
+#                     numbers in it are not re-derivable from the code.
+#
+#   parser/*.md       Design documents for the WARC/gzip work. Long, and the
+#                     reasoning in them is not reconstructable from what shipped.
+#
+#   *.test.ts         14 of them, run with `bun test`. They are source.
+# ---------------------------------------------------------------------------

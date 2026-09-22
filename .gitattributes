@@ -1,0 +1,20 @@
+# Normalise line endings in the repository to LF, regardless of what the machine
+# doing the committing uses.
+#
+# Not cosmetic here. This tree was written on Windows and is deployed on Linux,
+# and it already contains a mix: most source is CRLF, the files added when it was
+# prepared for publication are LF. Without this, the first commit from a machine
+# with a different core.autocrlf setting rewrites every byte of every file and
+# the diff is unreadable.
+#
+# `text=auto` lets git decide what is text; binary files are left alone.
+* text=auto eol=lf
+
+# Archives are binary and must never be line-ending converted — a WARC is a
+# byte-exact record of an HTTP exchange, and rewriting CRLF inside one corrupts
+# both the record boundaries and any payload checksum.
+*.warc binary
+*.warc.gz binary
+*.wacz binary
+*.gz binary
+*.zip binary

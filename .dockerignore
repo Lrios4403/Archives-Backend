@@ -1,0 +1,52 @@
+# Everything here is about the BUILD CONTEXT — the tarball the daemon receives
+# before a single instruction runs. Without this file that context was the whole
+# folder: ~40 MB, of which 38 MB was node_modules that the image installs itself
+# anyway, plus whatever archives happened to be sitting in warcs/.
+
+# Installed inside the image by `bun install --frozen-lockfile`. Shipping the
+# host's copy is both slow and wrong — it may have been built for another
+# platform.
+node_modules
+
+# Runtime data. warcs/ is mounted at runtime, and its contents are measured in
+# gigabytes; nothing about it belongs in a build.
+warcs/
+*.warc
+*.warc.gz
+*.wacz
+
+# Run output.
+*.log
+
+# Secrets. .env must never be baked into a layer — layers are readable by anyone
+# who can pull the image, and deleting the file in a later step does not remove
+# it from the one that added it. The values are supplied at runtime instead.
+.env
+.env.*
+!.env.example
+
+# Build output and caches.
+out
+dist
+coverage
+*.lcov
+*.tsbuildinfo
+*.tgz
+
+# Not needed to run the server, and each one invalidates the build cache when it
+# changes. The Dockerfile's own COPY is the one exception that has to stay
+# visible, so it is not listed here.
+.git
+.gitignore
+.dockerignore
+README.md
+parser/*.md
+
+# Editor and OS droppings.
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
