@@ -172,9 +172,12 @@ On Linux with python3 available, the first two categories go away.
 
 ## License
 
-[WTFPL](https://www.wtfpl.net/) version 2. You just do what the fuck you want to.
-See [LICENSE](LICENSE).
+Copyright (C) 2026 Logan Rios
 
-Note that this covers the code in this repository and nothing else. Archives are
-not distributed here, and whatever you capture with it carries whatever rights it
+This work is free. You can redistribute it and/or modify it under the terms of
+the [Do What The Fuck You Want To Public License](https://www.wtfpl.net/),
+Version 2, as published by Sam Hocevar. See [LICENSE](LICENSE) for the full text.
+
+That covers the code in this repository and nothing else. No archives are
+distributed here, and whatever you capture with this carries whatever rights it
 carried before you captured it.
